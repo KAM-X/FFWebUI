@@ -16,28 +16,28 @@ export class StockGraphComponent {
   private uPlotInstance!: uPlot;
   data: uPlot.AlignedData = [[], []];
 
-  // fakeStockDataArray: StockData[] = [
-  //   {
-  //     id: '1',
-  //     symbol: 'Amzn',
-  //     timestamp: new Date('2024-04-07'),
-  //     volume: 100,
-  //     high: 100,
-  //     low: 100,
-  //     close: 10,
-  //     open: 0,
-  //   },
-  //   {
-  //     id: '2',
-  //     symbol: 'Amzn',
-  //     timestamp: new Date('2024-04-06'),
-  //     volume: 100,
-  //     high: 100,
-  //     low: 100,
-  //     close: 5,
-  //     open: 0,
-  //   }
-  // ]
+  fakeStockDataArray: StockData[] = [
+    {
+      id: '1',
+      symbol: 'Amzn',
+      timestamp: new Date('2024-04-07'),
+      volume: 100,
+      high: 100,
+      low: 100,
+      close: 10,
+      open: 0,
+    },
+    {
+      id: '2',
+      symbol: 'Amzn',
+      timestamp: new Date('2024-04-06'),
+      volume: 100,
+      high: 100,
+      low: 100,
+      close: 5,
+      open: 0,
+    }
+  ]
 
 
   constructor() { }
@@ -47,8 +47,7 @@ export class StockGraphComponent {
 
   ngAfterViewInit(): void {
     this.initializeChart();
-    // this.populateData(this.fakeStockDataArray);
-
+    this.populateData(this.fakeStockDataArray);
   }
 
   populateData(stockDataArray: StockData[]): void {
@@ -77,7 +76,7 @@ export class StockGraphComponent {
       scales: {
         x: {
           time: true,
-          range: (min, max) => [1566453600, 1566813540],
+          range: (min, max) => [1711983516, 1712505682],
         },
         y: {
           auto: true,
