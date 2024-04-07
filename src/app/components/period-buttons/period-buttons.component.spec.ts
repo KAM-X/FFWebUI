@@ -7,7 +7,7 @@ describe('PeriodButtonsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PeriodButtonsComponent]
+      imports: [PeriodButtonsComponent]
     }).compileComponents();
   });
 
@@ -24,4 +24,6 @@ describe('PeriodButtonsComponent', () => {
   it('should have "1D" as the default selected period', () => {
     expect(component.currentSelected).toBe('1D');
   });
+
+
 });
