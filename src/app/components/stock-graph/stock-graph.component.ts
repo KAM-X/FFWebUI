@@ -1,6 +1,10 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import uPlot, { AlignedData } from 'uplot';
 import { StockData } from '../../models/stockData.model';
+import { StockDataService } from '../../services/stock-data.service';
+import stockDataAMZNResponse from '../../examples/stockDataAMZNResponse.example';
+import StockDataMapper from '../../mappers/stockData.mapper';
+import smallStockDataAMZNResponseExample from '../../examples/smallStockDataAMZNResponse.example';
 
 @Component({
   selector: 'app-stock-graph',
@@ -10,44 +14,25 @@ import { StockData } from '../../models/stockData.model';
 })
 
 export class StockGraphComponent {
-
-
   @ViewChild('chartElement') chartElement!: ElementRef<HTMLDivElement>;
   private uPlotInstance!: uPlot;
   data: uPlot.AlignedData = [[], []];
+  startDatetime: Date = new Date('2024-04-04');
+  endDatetime: Date = new Date('2024-04-05');
 
-  fakeStockDataArray: StockData[] = [
-    {
-      id: '1',
-      symbol: 'Amzn',
-      timestamp: new Date('2024-04-07'),
-      volume: 100,
-      high: 100,
-      low: 100,
-      close: 10,
-      open: 0,
-    },
-    {
-      id: '2',
-      symbol: 'Amzn',
-      timestamp: new Date('2024-04-06'),
-      volume: 100,
-      high: 100,
-      low: 100,
-      close: 5,
-      open: 0,
-    }
-  ]
+  constructor(private stockService: StockDataService) {}
 
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.initializeChart();
-    this.populateData(this.fakeStockDataArray);
+
+    // Example response data
+    // this.populateData(smallStockDataAMZNResponseExample.map(item => StockDataMapper.fromAPI(item)));
+
+    this.stockService.getStockData('AMZN', this.startDatetime, this.endDatetime).subscribe((stockDataArray) => {
+      this.populateData(stockDataArray);
+    });
   }
 
   populateData(stockDataArray: StockData[]): void {
@@ -57,7 +42,6 @@ export class StockGraphComponent {
   }
 
   updateData(newData: StockData[]) {
-
     newData.forEach((stockData) => {
       (this.data[0] as number[]).push(stockData.timestamp.getTime() / 1000); // Convert Date to timestamp
       (this.data[1] as number[]).push(stockData.close);
@@ -69,18 +53,18 @@ export class StockGraphComponent {
   }
 
   private initializeChart(): void {
-
     const opts: uPlot.Options = {
       title: "",
       ...this.getSize(),
       scales: {
         x: {
+          auto: true,
           time: true,
-          range: (min, max) => [1711983516, 1712505682],
+          // range: (min, max) => [1712188800, 1712275200],
         },
         y: {
           auto: true,
-          range: (min, max) => [0, 100],
+          // range: (min, max) => [0, 1000],
         },
       },
       series: [
