@@ -25,5 +25,13 @@ describe('PeriodButtonsComponent', () => {
     expect(component.currentSelected).toBe('1D');
   });
 
+  const periods = ['1D', '7D', '1M', '6M', 'YTD', '1Y', '5Y'];
 
+  periods.forEach(period => {
+    it(`should emit "${period}" when the ${period} button is clicked`, () => {
+      spyOn(component.periodChange, 'emit');
+      component.onPeriodSelect(period);
+      expect(component.periodChange.emit).toHaveBeenCalledWith({ period });
+    });
+  });
 });
