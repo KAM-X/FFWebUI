@@ -20,4 +20,8 @@ describe('PeriodButtonsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should have "1D" as the default selected period', () => {
+    expect(component.currentSelected).toBe('1D');
+  });
 });
