@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StockGraphComponent } from './stock-graph.component';
 import { StockData } from '../../models/stockData.model';
+import { of } from 'rxjs';
+import { HttpClient, HttpHandler } from '@angular/common/http';
 
 describe('StockGraphComponent', () => {
   let component: StockGraphComponent;
@@ -9,7 +11,8 @@ describe('StockGraphComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StockGraphComponent]
+      imports: [StockGraphComponent],
+      providers: [HttpClient, HttpHandler]
     })
       .compileComponents();
 
@@ -25,6 +28,34 @@ describe('StockGraphComponent', () => {
   it('should render a graph', () => {
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('div.u-over')).toBeTruthy();
+  });
+
+  it('should call API to get stock data', () => {
+    const fakeResponseData: StockData[] = [{
+      id: "AMZN-2024-04-04T19:59:00.000Z",
+      symbol: "AMZN",
+      timestamp: new Date("2024-04-04T19:59:00.000Z"),
+      volume: 25228,
+      high: 180.19,
+      low: 180.02,
+      close: 180.03,
+      open: 180.06
+    },
+    {
+      id: "AMZN-2024-04-04T19:58:00.000Z",
+      symbol: "AMZN",
+      timestamp: new Date("2024-04-04T19:58:00.000Z"),
+      volume: 10269,
+      high: 180.145,
+      low: 180.045,
+      close: 180.065,
+      open: 180.105
+    }];
+    const getStockDataSpy = spyOn(component["stockService"], 'getStockData').and.callFake(() => of(fakeResponseData));
+
+    component.ngAfterViewInit();
+
+    expect(getStockDataSpy).toHaveBeenCalledOnceWith('AMZN', component.startDatetime, component.endDatetime);
   });
 
   it('should update the graph when new data is provided', () => {
