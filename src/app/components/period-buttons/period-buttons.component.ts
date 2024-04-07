@@ -12,7 +12,11 @@ export interface PeriodChangeEvent {
 })
 export class PeriodButtonsComponent {
   @Output() periodChange = new EventEmitter<PeriodChangeEvent>();
-  currentSelected: string = '1D'; // Default selected period
+  currentSelected: string = '1D';
 
-  constructor() { }
+  onPeriodSelect(period: string) {
+    this.currentSelected = period;
+    console.log(`Button clicked for period: ${period}`); 
+    this.periodChange.emit({ period });
+  }
 }
