@@ -55,7 +55,7 @@ describe('StockGraphComponent', () => {
 
     component.ngAfterViewInit();
 
-    expect(getStockDataSpy).toHaveBeenCalledOnceWith('AMZN', component.startDatetime, component.endDatetime);
+    expect(getStockDataSpy).toHaveBeenCalledWith('AMZN', component.startDatetime, component.endDatetime);
   });
 
   it('should update the graph when new data is provided', () => {
@@ -109,16 +109,17 @@ describe('StockGraphComponent', () => {
       new Date('2024-04-05').getTime() / 1000,
       new Date('2024-04-04').getTime() / 1000,
     ],
-    [10, 5, 2, 1000]
+    [10, 5, 2, 1000],
+    [],
     ];
 
-    component.populateData(initData);
+    component.populateData(initData, 1);
     fixture.detectChanges();
 
     const updateSpy = spyOn(component, 'updateData').and.callThrough();
-    component.updateData(newData);
+    component.updateData(newData, 1);
 
-    expect(updateSpy).toHaveBeenCalledWith(newData);
+    expect(updateSpy).toHaveBeenCalledWith(newData, 1);
 
     expect(component["uPlotInstance"].data).toEqual(resultData);
   });

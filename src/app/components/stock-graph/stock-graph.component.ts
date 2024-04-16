@@ -5,6 +5,7 @@ import { StockDataService } from '../../services/stock-data.service';
 import stockDataAMZNResponse from '../../examples/stockDataAMZNResponse.example';
 import StockDataMapper from '../../mappers/stockData.mapper';
 import smallStockDataAMZNResponseExample from '../../examples/smallStockDataAMZNResponse.example';
+import smallStockDataAAPLResponseExample from '../../examples/smallStockDataAAPLResponse.example';
 
 @Component({
   selector: 'app-stock-graph',
@@ -12,41 +13,47 @@ import smallStockDataAMZNResponseExample from '../../examples/smallStockDataAMZN
   imports: [],
   templateUrl: './stock-graph.component.html',
 })
-
 export class StockGraphComponent {
   @ViewChild('chartElement') chartElement!: ElementRef<HTMLDivElement>;
   private uPlotInstance!: uPlot;
-  data: uPlot.AlignedData = [[], []];
-  startDatetime: Date = new Date('2024-04-04');
-  endDatetime: Date = new Date('2024-04-05');
+  data: uPlot.AlignedData = [[], [], []];
+  startDatetime: Date = new Date('2024-04-04T19:23:00.000Z');
+  endDatetime: Date = new Date('2024-04-04T19:59:00.000Z');
 
   constructor(private stockService: StockDataService) {}
 
-  ngOnInit(): void {}
-
   ngAfterViewInit(): void {
     this.initializeChart();
+    this.fetchStockData();
+  }
 
-    // Example response data
-    // this.populateData(smallStockDataAMZNResponseExample.map(item => StockDataMapper.fromAPI(item)));
+  fetchStockData(): void {
+    /* Example response data */
+    // this.populateData(smallStockDataAMZNResponseExample.map(item => StockDataMapper.fromAPI(item)), 1);
+    // this.populateData(smallStockDataAAPLResponseExample.map(item => StockDataMapper.fromAPI(item)), 2);
 
-    this.stockService.getStockData('AMZN', this.startDatetime, this.endDatetime).subscribe((stockDataArray) => {
-      this.populateData(stockDataArray);
+    this.stockService.getStockData('AMZN', this.startDatetime, this.endDatetime).subscribe((amznData) => {
+      this.populateData(amznData, 1);
+    });
+
+    this.stockService.getStockData('AAPL', this.startDatetime, this.endDatetime).subscribe((aaplData) => {
+      this.populateData(aaplData, 2);
     });
   }
 
-  populateData(stockDataArray: StockData[]): void {
-    // Reset existing data
-    this.data = [[], []];
-    this.updateData(stockDataArray);
+  populateData(stockDataArray: StockData[], seriesIndex: number): void {
+    this.data[seriesIndex] = [];
+    this.updateData(stockDataArray, seriesIndex);
   }
 
-  updateData(newData: StockData[]) {
+  updateData(newData: StockData[], seriesIndex: number): void {
     newData.forEach((stockData) => {
-      (this.data[0] as number[]).push(stockData.timestamp.getTime() / 1000); // Convert Date to timestamp
-      (this.data[1] as number[]).push(stockData.close);
+      if (seriesIndex === 1 || seriesIndex === 2) {
+        (this.data[0] as Array<any>).push(stockData.timestamp.getTime() / 1000);
+        (this.data[seriesIndex] as Array<any>).push(stockData.close);
+      }
     });
-
+    // this.data[0] = newData.map(stockData => stockData.timestamp.getTime() / 1000);
     if (this.uPlotInstance) {
       this.uPlotInstance.setData(this.data);
     }
@@ -54,7 +61,7 @@ export class StockGraphComponent {
 
   private initializeChart(): void {
     const opts: uPlot.Options = {
-      title: "",
+      title: 'Trending stocks',
       ...this.getSize(),
       scales: {
         x: {
@@ -68,19 +75,24 @@ export class StockGraphComponent {
         },
       },
       series: [
-        { label: "Time" },
-        { label: "Price ($)", stroke: "red" },
+        { label: 'Time' },
+        { label: 'AMZN Price ($)', stroke: 'red' },
+        { label: 'AAPL Price ($)', stroke: 'blue' }, // New series for AAPL
       ],
     };
 
-    this.uPlotInstance = new uPlot(opts, this.data, this.chartElement.nativeElement);
+    this.uPlotInstance = new uPlot(
+      opts,
+      this.data,
+      this.chartElement.nativeElement
+    );
   }
 
   getSize() {
     return {
       width: this.chartElement.nativeElement.offsetWidth,
       height: this.chartElement.nativeElement.offsetHeight - 50,
-    }
+    };
   }
 
   @HostListener('window:resize', ['$event'])
