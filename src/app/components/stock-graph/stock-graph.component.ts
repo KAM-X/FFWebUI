@@ -42,23 +42,18 @@ export class StockGraphComponent {
   }
 
   populateData(stockDataArray: StockData[], seriesIndex: number): void {
-    // Reset existing series data
     this.data[seriesIndex] = [];
+    this.updateData(stockDataArray, seriesIndex);
+  }
 
-    stockDataArray.forEach((stockData) => {
-      if (seriesIndex === 1) {
-        // If AMZN
-        (this.data[1] as number[]).push(stockData.close);
-      } else if (seriesIndex === 2) {
-        // If AAPL
-        (this.data[2] as number[]).push(stockData.close);
+  updateData(newData: StockData[], seriesIndex: number): void {
+    newData.forEach((stockData) => {
+      if (seriesIndex === 1 || seriesIndex === 2) {
+        (this.data[0] as Array<any>).push(stockData.timestamp.getTime() / 1000);
+        (this.data[seriesIndex] as Array<any>).push(stockData.close);
       }
     });
-
-    this.data[0] = stockDataArray.map(
-      (stockData) => stockData.timestamp.getTime() / 1000
-    ); // Ensure timestamps align for all series
-
+    // this.data[0] = newData.map(stockData => stockData.timestamp.getTime() / 1000);
     if (this.uPlotInstance) {
       this.uPlotInstance.setData(this.data);
     }
