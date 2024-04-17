@@ -6,6 +6,7 @@ import stockDataAMZNResponse from '../../examples/stockDataAMZNResponse.example'
 import StockDataMapper from '../../mappers/stockData.mapper';
 import smallStockDataAMZNResponseExample from '../../examples/smallStockDataAMZNResponse.example';
 import smallStockDataAAPLResponseExample from '../../examples/smallStockDataAAPLResponse.example';
+import { StockDataWebsocketService } from '../../services/stock-data-websocket.service';
 
 @Component({
   selector: 'app-stock-graph',
@@ -19,12 +20,43 @@ export class StockGraphComponent {
   data: uPlot.AlignedData = [[], [], []];
   startDatetime: Date = new Date('2024-04-04T19:23:00.000Z');
   endDatetime: Date = new Date('2024-04-04T19:59:00.000Z');
+  graphDisplayStartDatetime = new Date('2024-04-04T15:30:00.000Z'); // Not yet used
+  graphDisplayEndDatetime = new Date('2024-04-04T23:59:00.000Z'); // Not yet used
 
-  constructor(private stockService: StockDataService) {}
+  timestampSet = new Set<number>();
+  stocksByTimestamp = new Map<number, Map<string, StockData>>();
+
+  stockSymbolToSeriesIndexMap = new Map<string, number>([
+    ['AMZN', 1],
+    ['AAPL', 2],
+  ]);
+
+  constructor(
+    private stockService: StockDataService,
+    private wsService: StockDataWebsocketService
+  ) {}
 
   ngAfterViewInit(): void {
     this.initializeChart();
     this.fetchStockData();
+    this.initRealtimeData();
+  }
+
+  initRealtimeData(): void {
+    this.wsService.getMessages().subscribe({
+      next: (stockData) => {
+        const seriesIndex = this.stockSymbolToSeriesIndexMap.get(
+          stockData.symbol
+        );
+        if (seriesIndex) {
+          this.updateData([stockData], seriesIndex);
+          console.log('updating graph with stock data:', stockData);
+        }
+      },
+      error: (error) => {
+        console.error('Error updating graph with stock data:', error);
+      },
+    });
   }
 
   fetchStockData(): void {
@@ -32,13 +64,17 @@ export class StockGraphComponent {
     // this.populateData(smallStockDataAMZNResponseExample.map(item => StockDataMapper.fromAPI(item)), 1);
     // this.populateData(smallStockDataAAPLResponseExample.map(item => StockDataMapper.fromAPI(item)), 2);
 
-    this.stockService.getStockData('AMZN', this.startDatetime, this.endDatetime).subscribe((amznData) => {
-      this.populateData(amznData, 1);
-    });
+    this.stockService
+      .getStockData('AMZN', this.startDatetime, this.endDatetime)
+      .subscribe((amznData) => {
+        this.populateData(amznData, this.stockSymbolToSeriesIndexMap.get('AMZN')!);
+      });
 
-    this.stockService.getStockData('AAPL', this.startDatetime, this.endDatetime).subscribe((aaplData) => {
-      this.populateData(aaplData, 2);
-    });
+    this.stockService
+      .getStockData('AAPL', this.startDatetime, this.endDatetime)
+      .subscribe((aaplData) => {
+        this.populateData(aaplData, this.stockSymbolToSeriesIndexMap.get('AAPL')!);
+      });
   }
 
   populateData(stockDataArray: StockData[], seriesIndex: number): void {
@@ -49,11 +85,34 @@ export class StockGraphComponent {
   updateData(newData: StockData[], seriesIndex: number): void {
     newData.forEach((stockData) => {
       if (seriesIndex === 1 || seriesIndex === 2) {
-        (this.data[0] as Array<any>).push(stockData.timestamp.getTime() / 1000);
-        (this.data[seriesIndex] as Array<any>).push(stockData.close);
+        const timestamp = stockData.timestamp.getTime() / 1000;
+        this.timestampSet.add(timestamp);
+        if (!this.stocksByTimestamp.has(timestamp)) {
+          this.stocksByTimestamp.set(timestamp, new Map<string, StockData>());
+        }
+        this.stocksByTimestamp.get(timestamp)?.set(stockData.symbol, stockData);
       }
     });
-    // this.data[0] = newData.map(stockData => stockData.timestamp.getTime() / 1000);
+
+    const newChartData: uPlot.AlignedData = [[], [], []];
+
+    Array.from(this.timestampSet)
+      .sort()
+      .forEach((timestamp) => {
+        const stockDataMap = this.stocksByTimestamp.get(timestamp);
+        if (stockDataMap) {
+          (newChartData[0] as any[]).push(timestamp);
+          (newChartData[1] as any[]).push(
+            stockDataMap.get('AMZN')?.close || null
+          );
+          (newChartData[2] as any[]).push(
+            stockDataMap.get('AAPL')?.close || null
+          );
+        }
+      });
+
+    this.data = newChartData;
+
     if (this.uPlotInstance) {
       this.uPlotInstance.setData(this.data);
     }
@@ -68,6 +127,7 @@ export class StockGraphComponent {
           auto: true,
           time: true,
           // range: (min, max) => [1712188800, 1712275200],
+          // range: (min, max) => [this.graphDisplayStartDatetime.getTime() / 1000, this.graphDisplayEndDatetime.getTime() / 1000],
         },
         y: {
           auto: true,
@@ -77,7 +137,7 @@ export class StockGraphComponent {
       series: [
         { label: 'Time' },
         { label: 'AMZN Price ($)', stroke: 'red' },
-        { label: 'AAPL Price ($)', stroke: 'blue' }, // New series for AAPL
+        { label: 'AAPL Price ($)', stroke: 'blue' },
       ],
     };
 
@@ -99,4 +159,12 @@ export class StockGraphComponent {
   onResize(event: any) {
     this.uPlotInstance.setSize(this.getSize());
   }
+
+  // On ` press, log this.data
+  // @HostListener('document:keypress', ['$event'])
+  // handleKeyboardEvent(event: KeyboardEvent) {
+  //   if (event.key === '`') {
+  //     console.log('this.data:', this.data);
+  //   }
+  // }
 }
