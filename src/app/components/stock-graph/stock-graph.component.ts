@@ -20,10 +20,8 @@ export class StockGraphComponent implements OnChanges {
   @ViewChild('chartElement') chartElement!: ElementRef<HTMLDivElement>;
   private uPlotInstance!: uPlot;
   data: uPlot.AlignedData = [[], [], []];
-  @Input() startDatetime: Date = new Date('2024-04-04T19:23:00.000Z');
-  @Input() endDatetime: Date = new Date('2024-04-04T19:59:00.000Z');
-  graphDisplayStartDatetime = new Date('2024-04-04T15:30:00.000Z'); // Not yet used
-  graphDisplayEndDatetime = new Date('2024-04-04T23:59:00.000Z'); // Not yet used
+  @Input() startDatetime: Date = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  @Input() endDatetime: Date = new Date();
 
   timestampSet = new Set<number>();
   stocksByTimestamp = new Map<number, Map<string, StockData>>();

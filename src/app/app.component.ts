@@ -13,8 +13,9 @@ import { PeriodButtonsComponent } from './components/period-buttons/period-butto
 })
 export class AppComponent {
   title = 'FFWebUI';
-  startDatetime: Date = new Date('2024-04-04T19:23:00.000Z');
-  endDatetime: Date = new Date('2024-04-04T19:59:00.000Z');
+  startDatetime: Date = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  endDatetime: Date = new Date();
+  
   updateDates(event: any) {
     this.startDatetime = new Date(event.startDatetime);
     this.endDatetime = new Date(event.endDatetime);

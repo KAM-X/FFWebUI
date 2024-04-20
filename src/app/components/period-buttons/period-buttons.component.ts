@@ -17,7 +17,6 @@ export class PeriodButtonsComponent {
 
   onPeriodSelect(period: string) {
     this.currentSelected = period;
-    console.log(`Button clicked for period: ${period}`);
 
     let startDatetime = new Date();
     let endDatetime = new Date();
