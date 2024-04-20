@@ -21,8 +21,8 @@ export class StockLegendComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   stockData: uPlot.AlignedData = [[], [], []];
   stockPercentage: number[] = [];
-
   idx: number | null | undefined;
+  scale: number[] = [0, 0];
   constructor(private sharedService: StockDataSharedService) {}
 
   ngOnInit(): void {
@@ -34,6 +34,11 @@ export class StockLegendComponent implements OnInit {
     this.subscriptions.add(
       this.sharedService.stockDataPercentage$.subscribe((data) => {
         this.idx = data;
+      })
+    );
+    this.subscriptions.add(
+      this.sharedService.selectedDataScale$.subscribe((data) => {
+        this.scale = data;
       })
     );
   }
@@ -53,11 +58,11 @@ export class StockLegendComponent implements OnInit {
     }
 
     if (this.idx == null || this.idx == null) {
-      this.idx = this.stockData[0].length - 1;
+      this.idx = this.scale[1];
     }
 
     const hoveredData = this.stockData.map((series) => series[this.idx!]);
-    const stock1Base = this.stockData[id][0];
+    const stock1Base = this.stockData[id][this.scale[0]];
     const stockPercentage =
       ((hoveredData[id]! - stock1Base!) / stock1Base!) * 100;
     if (hoveredData[id] != null || hoveredData[id] != undefined) {
@@ -67,6 +72,7 @@ export class StockLegendComponent implements OnInit {
     }
     return 'N/A';
   }
+
   getStockDate(): string {
     if (
       !this.stockData ||

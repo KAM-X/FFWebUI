@@ -157,6 +157,7 @@ export class StockGraphComponent {
             this.logDataAtCursor(u, u.cursor.idx);
           },
         ],
+        setScale: [(u, scaleKey) => this.handleZoom(u, scaleKey)],
       },
     };
 
@@ -179,6 +180,34 @@ export class StockGraphComponent {
       return;
     }
     this.sharedService.updateHoveredData(idx);
+  }
+  handleZoom(uPlotInstance: uPlot, scaleKey: string): void {
+    if (scaleKey === 'x') {
+      // This will get the current min and max of the x-axis
+      let min = uPlotInstance.scales['x'].min;
+      let max = uPlotInstance.scales['x'].max;
+
+      const xValues = this.data[0];
+
+      let minIndex = -1;
+      let maxIndex = -1;
+      let currentMin = Infinity;
+      let currentMax = -Infinity;
+
+      xValues.forEach((value, index) => {
+        if (value >= min! && value <= max!) {
+          if (value < currentMin) {
+            currentMin = value;
+            minIndex = index;
+          }
+          if (value > currentMax) {
+            currentMax = value;
+            maxIndex = index;
+          }
+        }
+      });
+      this.sharedService.updateSelectedScale(minIndex, maxIndex);
+    }
   }
 
   @HostListener('window:resize', ['$event'])

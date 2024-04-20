@@ -13,6 +13,8 @@ export class StockDataSharedService {
     number | null | undefined
   >(-1);
   stockDataPercentage$ = this.hoveredDataPercentage.asObservable();
+  private selectedDataScale = new BehaviorSubject<number[]>([]);
+  selectedDataScale$ = this.selectedDataScale.asObservable();
 
   constructor() {}
 
@@ -22,5 +24,9 @@ export class StockDataSharedService {
 
   updateHoveredData(idx: number | null | undefined): void {
     this.hoveredDataPercentage.next(idx);
+  }
+
+  updateSelectedScale(min: number, max: number): void {
+    this.selectedDataScale.next([min, max]);
   }
 }
