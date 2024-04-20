@@ -225,4 +225,57 @@ export class StockGraphComponent {
   onResize(event: any) {
     this.uPlotInstance.setSize(this.getSize());
   }
+
+  isShiftDown: boolean = false;
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    this.isShiftDown = event.shiftKey;
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+    this.isShiftDown = event.shiftKey;
+  }
+
+  @HostListener('mousewheel', ['$event'])
+  handleMouseWheel(event: WheelEvent) {
+    event.preventDefault();
+    const direction = event.deltaY < 0 ? 'out' : 'in';
+
+    if (!this.isShiftDown) {
+      this.adjustZoom(direction);
+      return;
+    }
+
+    this.adjustSlide(direction);
+  }
+
+  adjustZoom(direction: 'in' | 'out') {
+    const u = this.uPlotInstance;
+    if (!u) return;
+
+    const currentMin = u.scales['x'].min ?? 0;
+    const currentMax = u.scales['x'].max ?? 0;
+    const delta = (currentMax - currentMin) * 0.1;
+
+    if (direction === 'in') {
+      u.setScale('x', { min: currentMin - delta, max: currentMax + delta });
+    } else {
+      u.setScale('x', { min: currentMin + delta, max: currentMax - delta });
+    }
+  }
+  adjustSlide(direction: 'in' | 'out') {
+    const u = this.uPlotInstance;
+    if (!u) return;
+
+    const currentMin = u.scales['x'].min ?? 0;
+    const currentMax = u.scales['x'].max ?? 0;
+    const delta = 60;
+
+    if (direction === 'in') {
+      u.setScale('x', { min: currentMin + delta, max: currentMax + delta });
+    } else {
+      u.setScale('x', { min: currentMin - delta, max: currentMax - delta });
+    }
+  }
 }
