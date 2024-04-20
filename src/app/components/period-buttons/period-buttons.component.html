@@ -1,11 +1,60 @@
-<div class="mb-4">Current selected: {{currentSelected}}</div>
+<!-- <div class="mb-4">Current selected: {{currentSelected}}</div> -->
 
 <div class="flex flex-wrap gap-2">
-  <button class="btn" [class.bg-blue-500]="currentSelected === '1D'" [class.bg-white]="currentSelected !== '1D'" (click)="onPeriodSelect('1D')">1 day</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === '7D'" [class.bg-white]="currentSelected !== '7D'" (click)="onPeriodSelect('7D')">7 days</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === '1M'" [class.bg-white]="currentSelected !== '1M'" (click)="onPeriodSelect('1M')">1 month</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === '6M'" [class.bg-white]="currentSelected !== '6M'" (click)="onPeriodSelect('6M')">6 months</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === 'YTD'" [class.bg-white]="currentSelected !== 'YTD'" (click)="onPeriodSelect('YTD')">YTD</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === '1Y'" [class.bg-white]="currentSelected !== '1Y'" (click)="onPeriodSelect('1Y')">1 year</button>
-  <button class="btn" [class.bg-blue-500]="currentSelected === '5Y'" [class.bg-white]="currentSelected !== '5Y'" (click)="onPeriodSelect('5Y')">5 years</button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '1D'"
+    [class.bg-white]="currentSelected !== '1D'"
+    (click)="onPeriodSelect('1D')"
+  >
+    1 day
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '7D'"
+    [class.bg-white]="currentSelected !== '7D'"
+    (click)="onPeriodSelect('7D')"
+  >
+    7 days
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '1M'"
+    [class.bg-white]="currentSelected !== '1M'"
+    (click)="onPeriodSelect('1M')"
+  >
+    1 month
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '6M'"
+    [class.bg-white]="currentSelected !== '6M'"
+    (click)="onPeriodSelect('6M')"
+  >
+    6 months
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === 'YTD'"
+    [class.bg-white]="currentSelected !== 'YTD'"
+    (click)="onPeriodSelect('YTD')"
+  >
+    YTD
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '1Y'"
+    [class.bg-white]="currentSelected !== '1Y'"
+    (click)="onPeriodSelect('1Y')"
+  >
+    1 year
+  </button>
+  <button
+    class="btn border-none bg-white shadow-md rounded"
+    [class.bg-blue-500]="currentSelected === '5Y'"
+    [class.bg-white]="currentSelected !== '5Y'"
+    (click)="onPeriodSelect('5Y')"
+  >
+    5 years
+  </button>
 </div>
