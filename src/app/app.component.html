@@ -1,4 +1,14 @@
-<!-- <div class="w-[800px] h-[400px]"> -->
-<app-stock-graph></app-stock-graph>
-<app-stock-legend></app-stock-legend>
-<!-- </div> -->
+<div class="w-screen h-screen bg-slate-100">
+  <h1 class="text-4xl font-bold mb-4 text-center">Trending stocks</h1>
+  <div class="flex w-full h-[50%] justify-center align-middle">
+    <div class="flex w-[70%]">
+      <div class="flex flex-col w-full h-full">
+        <app-stock-graph
+          class="w-full h-full bg-white shadow-md rounded mb-4"
+        ></app-stock-graph>
+        <app-period-buttons class=""></app-period-buttons>
+      </div>
+      <app-stock-legend class="h-full"></app-stock-legend>
+    </div>
+  </div>
+</div>

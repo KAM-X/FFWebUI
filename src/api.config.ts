@@ -14,4 +14,7 @@ export const API_ROUTES = {
       return `${API_BASE}/v1/stock/${stockSymbol}?${params.toString()}`;
     },
   },
+  ws: {
+    negotiate: `${API_BASE}/negotiate`,
+  }
 };
