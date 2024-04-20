@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, Input, OnChanges, SimpleChanges } from '@angular/core';
 import uPlot, { AlignedData } from 'uplot';
 import { StockData } from '../../models/stockData.model';
 import { StockDataService } from '../../services/stock-data.service';
@@ -9,20 +9,19 @@ import smallStockDataAAPLResponseExample from '../../examples/smallStockDataAAPL
 import { StockDataWebsocketService } from '../../services/stock-data-websocket.service';
 import { StockDataSharedService } from '../../services/stock-data-shared.service';
 
+
 @Component({
   selector: 'app-stock-graph',
   standalone: true,
   imports: [],
   templateUrl: './stock-graph.component.html',
 })
-export class StockGraphComponent {
+export class StockGraphComponent implements OnChanges {
   @ViewChild('chartElement') chartElement!: ElementRef<HTMLDivElement>;
   private uPlotInstance!: uPlot;
   data: uPlot.AlignedData = [[], [], []];
-  startDatetime: Date = new Date('2024-04-04T19:23:00.000Z');
-  endDatetime: Date = new Date('2024-04-04T19:59:00.000Z');
-  graphDisplayStartDatetime = new Date('2024-04-04T15:30:00.000Z'); // Not yet used
-  graphDisplayEndDatetime = new Date('2024-04-04T23:59:00.000Z'); // Not yet used
+  @Input() startDatetime: Date = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  @Input() endDatetime: Date = new Date();
 
   timestampSet = new Set<number>();
   stocksByTimestamp = new Map<number, Map<string, StockData>>();
@@ -37,6 +36,12 @@ export class StockGraphComponent {
     private stockService: StockDataService,
     private wsService: StockDataWebsocketService
   ) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['startDatetime'] || changes['endDatetime']) {
+      this.fetchStockData();
+    }
+  }
 
   ngAfterViewInit(): void {
     this.initializeChart();
@@ -62,6 +67,8 @@ export class StockGraphComponent {
   }
 
   fetchStockData(): void {
+    this.timestampSet.clear();
+    this.stocksByTimestamp.clear();
     /* Example response data */
     // this.populateData(smallStockDataAMZNResponseExample.map(item => StockDataMapper.fromAPI(item)), 1);
     // this.populateData(smallStockDataAAPLResponseExample.map(item => StockDataMapper.fromAPI(item)), 2);

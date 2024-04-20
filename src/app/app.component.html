@@ -2,9 +2,12 @@
   <h1 class="text-4xl font-bold mb-4 text-center">Trending stocks</h1>
   <div class="flex w-full h-[50%] justify-center align-middle">
     <div class="flex w-[70%]">
-      <app-stock-graph
-        class="w-full h-full bg-white shadow-md rounded mb-4"
-      ></app-stock-graph>
+      <div class="flex flex-col w-full h-full">
+        <app-stock-graph
+          class="w-full h-full bg-white shadow-md rounded mb-4"
+        ></app-stock-graph>
+        <app-period-buttons class=""></app-period-buttons>
+      </div>
       <app-stock-legend class="h-full"></app-stock-legend>
     </div>
   </div>
