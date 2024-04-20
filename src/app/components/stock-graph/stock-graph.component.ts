@@ -182,7 +182,6 @@ export class StockGraphComponent {
     if (!this.data) {
       return;
     }
-    // update only idx index
     this.sharedService.updateHoveredData(idx);
   }
 
@@ -190,12 +189,4 @@ export class StockGraphComponent {
   onResize(event: any) {
     this.uPlotInstance.setSize(this.getSize());
   }
-
-  // On ` press, log this.data
-  // @HostListener('document:keypress', ['$event'])
-  // handleKeyboardEvent(event: KeyboardEvent) {
-  //   if (event.key === '`') {
-  //     console.log('this.data:', this.data);
-  //   }
-  // }
 }
