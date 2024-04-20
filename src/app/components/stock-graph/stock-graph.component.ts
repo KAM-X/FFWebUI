@@ -133,8 +133,8 @@ export class StockGraphComponent {
       ...this.getSize(),
       scales: {
         x: {
-          auto: true,
           time: true,
+          range: (u, newMin, newMax) => this.adjustedRange(u, newMin, newMax),
         },
         y: {
           auto: true,
@@ -157,6 +157,7 @@ export class StockGraphComponent {
             this.logDataAtCursor(u, u.cursor.idx);
           },
         ],
+        setScale: [(u, scaleKey) => this.handleZoom(u, scaleKey)],
       },
     };
 
@@ -181,8 +182,100 @@ export class StockGraphComponent {
     this.sharedService.updateHoveredData(idx);
   }
 
+  adjustedRange(u: uPlot, newMin: number, newMax: number): [number, number] {
+    let curMin = u.scales['x'].min ?? 0;
+    let curMax = u.scales['x'].max ?? 0;
+
+    if (newMax - newMin < 70) {
+      return [curMin, curMax];
+    } else {
+      return [newMin, newMax];
+    }
+  }
+
+  handleZoom(uPlotInstance: uPlot, scaleKey: string): void {
+    if (scaleKey === 'x') {
+      let min = uPlotInstance.scales['x'].min;
+      let max = uPlotInstance.scales['x'].max;
+
+      const xValues = this.data[0];
+
+      let minIndex = -1;
+      let maxIndex = -1;
+      let currentMin = Infinity;
+      let currentMax = -Infinity;
+
+      xValues.forEach((value, index) => {
+        if (value >= min! && value <= max!) {
+          if (value < currentMin) {
+            currentMin = value;
+            minIndex = index;
+          }
+          if (value > currentMax) {
+            currentMax = value;
+            maxIndex = index;
+          }
+        }
+      });
+      this.sharedService.updateSelectedScale(minIndex, maxIndex);
+    }
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.uPlotInstance.setSize(this.getSize());
+  }
+
+  isShiftDown: boolean = false;
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    this.isShiftDown = event.shiftKey;
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+    this.isShiftDown = event.shiftKey;
+  }
+
+  @HostListener('mousewheel', ['$event'])
+  handleMouseWheel(event: WheelEvent) {
+    event.preventDefault();
+    const direction = event.deltaY < 0 ? 'out' : 'in';
+
+    if (!this.isShiftDown) {
+      this.adjustZoom(direction);
+      return;
+    }
+
+    this.adjustSlide(direction);
+  }
+
+  adjustZoom(direction: 'in' | 'out') {
+    const u = this.uPlotInstance;
+    if (!u) return;
+
+    const currentMin = u.scales['x'].min ?? 0;
+    const currentMax = u.scales['x'].max ?? 0;
+    const delta = (currentMax - currentMin) * 0.1;
+
+    if (direction === 'in') {
+      u.setScale('x', { min: currentMin - delta, max: currentMax + delta });
+    } else {
+      u.setScale('x', { min: currentMin + delta, max: currentMax - delta });
+    }
+  }
+  adjustSlide(direction: 'in' | 'out') {
+    const u = this.uPlotInstance;
+    if (!u) return;
+
+    const currentMin = u.scales['x'].min ?? 0;
+    const currentMax = u.scales['x'].max ?? 0;
+    const delta = 65;
+
+    if (direction === 'in') {
+      u.setScale('x', { min: currentMin + delta, max: currentMax + delta });
+    } else {
+      u.setScale('x', { min: currentMin - delta, max: currentMax - delta });
+    }
   }
 }
