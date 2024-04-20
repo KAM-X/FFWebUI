@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { StockDataService } from '../../services/stock-data.service';
 
 export interface PeriodChangeEvent {
-  period: string;
+  startDatetime: Date;
+  endDatetime: Date;
 }
 
 @Component({
@@ -15,12 +15,9 @@ export class PeriodButtonsComponent {
   @Output() periodChange = new EventEmitter<PeriodChangeEvent>();
   currentSelected: string = '1D';
 
-  constructor(private stockDataService: StockDataService) {}
-
   onPeriodSelect(period: string) {
     this.currentSelected = period;
     console.log(`Button clicked for period: ${period}`);
-    this.periodChange.emit({ period });
 
     let startDatetime = new Date();
     let endDatetime = new Date();
@@ -49,9 +46,9 @@ export class PeriodButtonsComponent {
         break;
     }
 
-    this.stockDataService.getStockData('AAPL', startDatetime, endDatetime)
-        .subscribe(data => {
-          console.log('Stock Data for period:', period, data);
-        });
+    this.periodChange.emit({ 
+      startDatetime: new Date(startDatetime.getTime()), 
+      endDatetime: new Date(endDatetime.getTime()) 
+  });
   }
 }

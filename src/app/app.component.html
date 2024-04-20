@@ -1,11 +1,10 @@
 <div class="w-screen h-screen bg-slate-100">
   <h1 class="text-4xl font-bold mb-4 text-center">Trending stocks</h1>
   <div class="flex w-full h-[50%] justify-center align-middle">
-    <div class="flex w-[70%]">
-      <app-stock-graph
-        class="w-full h-full bg-white shadow-md rounded mb-4"
-      ></app-stock-graph>
-      <app-stock-legend class="h-full"></app-stock-legend>
-    </div>
+      <div class="flex w-[70%]">
+          <app-stock-graph [startDatetime]="startDatetime" [endDatetime]="endDatetime" #stockGraph class="w-full h-full bg-white shadow-md rounded mb-4"></app-stock-graph>
+          <app-period-buttons (periodChange)="updateDates($event)"></app-period-buttons>
+          <app-stock-legend class="h-full"></app-stock-legend>
+      </div>
   </div>
 </div>
