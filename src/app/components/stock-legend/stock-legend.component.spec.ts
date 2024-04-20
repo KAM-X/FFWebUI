@@ -7,11 +7,11 @@ describe('StockLegendComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StockLegendComponent]
+      imports: [StockLegendComponent],
     }).compileComponents();
   });
 
-   beforeEach(() => {
+  beforeEach(() => {
     fixture = TestBed.createComponent(StockLegendComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -25,7 +25,7 @@ describe('StockLegendComponent', () => {
     component['stock1Name'] = 'NVIDIA';
     component['stock1Data1'] = '-280$(-1.44%) Past day';
     component['stock1Data2'] = 'Market open: 2024-04-08';
-    
+
     component['stock2Name'] = 'AMD';
     component['stock2Data1'] = '+190$(+2.44%) Past day';
     component['stock2Data2'] = 'Market open: 2024-04-08';

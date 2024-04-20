@@ -1,22 +1,87 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { StockDataSharedService } from '../../services/stock-data-shared.service';
 
 @Component({
   selector: 'app-stock-legend',
   standalone: true,
   imports: [],
   templateUrl: './stock-legend.component.html',
-  styleUrl: './stock-legend.component.css'
+  styleUrl: './stock-legend.component.css',
 })
 export class StockLegendComponent implements OnInit {
-  @Input() stock1Name?: string = 'NVIDIA';
+  @Input() stock1Name?: string = 'Amazon';
   @Input() stock1Data1?: string = '-280$(-1.44%) Past day';
   @Input() stock1Data2?: string = 'Market open: 2024-04-08';
 
-  @Input() stock2Name?: string = 'AMD';
+  @Input() stock2Name?: string = 'Apple';
   @Input() stock2Data1?: string = '+190$(+2.44%) Past day';
   @Input() stock2Data2?: string = 'Market open: 2024-04-08';
 
-  constructor() {}
+  private subscriptions: Subscription = new Subscription();
+  stockData: uPlot.AlignedData = [[], [], []];
+  stockPercentage: number[] = [];
 
-  ngOnInit(): void {}
+  idx: number | null | undefined;
+  constructor(private sharedService: StockDataSharedService) {}
+
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.sharedService.hoveredData$.subscribe((data) => {
+        this.stockData = data;
+      })
+    );
+    this.subscriptions.add(
+      this.sharedService.stockDataPercentage$.subscribe((data) => {
+        this.idx = data;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe(); // Clean up to avoid memory leaks
+  }
+
+  // Helper functions to generate display strings dynamically
+  getStockDisplay(id: number): string {
+    if (
+      !this.stockData ||
+      !this.stockData[id] ||
+      this.stockData[id].length <= 1
+    ) {
+      return 'N/A';
+    }
+
+    if (this.idx == null || this.idx == null) {
+      this.idx = this.stockData[0].length - 1;
+    }
+
+    const hoveredData = this.stockData.map((series) => series[this.idx!]);
+    const stock1Base = this.stockData[id][1];
+    const stockPercentage =
+      ((hoveredData[id]! - stock1Base!) / stock1Base!) * 100;
+    if (hoveredData[id] != null || hoveredData[id] != undefined) {
+      return `${hoveredData[id]!.toFixed(2)}$ (${stockPercentage.toFixed(
+        2
+      )}%) Past day`;
+    }
+    return 'N/A';
+  }
+  getStockDate(): string {
+    if (
+      !this.stockData ||
+      !this.stockData[0] ||
+      this.stockData[0].length <= 1
+    ) {
+      return 'N/A';
+    }
+
+    if (this.idx == null || this.idx == null) {
+      this.idx = this.stockData[0].length - 1;
+    }
+    const hoveredData = this.stockData.map((series) => series[this.idx!]);
+
+    const date = new Date(hoveredData[0]! * 1000);
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()} ${date.getHours()}:${date.getMinutes()}`;
+  }
 }
