@@ -10,11 +10,11 @@ import { StockDataSharedService } from '../../services/stock-data-shared.service
   styleUrl: './stock-legend.component.css',
 })
 export class StockLegendComponent implements OnInit {
-  @Input() stock1Name?: string = 'Amazon';
+  @Input() stock1Name?: string = 'AMZN';
   @Input() stock1Data1?: string = '-280$(-1.44%) Past day';
   @Input() stock1Data2?: string = 'Market open: 2024-04-08';
 
-  @Input() stock2Name?: string = 'Apple';
+  @Input() stock2Name?: string = 'AAPL';
   @Input() stock2Data1?: string = '+190$(+2.44%) Past day';
   @Input() stock2Data2?: string = 'Market open: 2024-04-08';
 
@@ -57,7 +57,7 @@ export class StockLegendComponent implements OnInit {
     }
 
     const hoveredData = this.stockData.map((series) => series[this.idx!]);
-    const stock1Base = this.stockData[id][1];
+    const stock1Base = this.stockData[id][0];
     const stockPercentage =
       ((hoveredData[id]! - stock1Base!) / stock1Base!) * 100;
     if (hoveredData[id] != null || hoveredData[id] != undefined) {
@@ -82,6 +82,13 @@ export class StockLegendComponent implements OnInit {
     const hoveredData = this.stockData.map((series) => series[this.idx!]);
 
     const date = new Date(hoveredData[0]! * 1000);
-    return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()} ${date.getHours()}:${date.getMinutes()}`;
+
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 }
