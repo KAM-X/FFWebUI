@@ -270,7 +270,7 @@ export class StockGraphComponent {
 
     const currentMin = u.scales['x'].min ?? 0;
     const currentMax = u.scales['x'].max ?? 0;
-    const delta = 60;
+    const delta = 65;
 
     if (direction === 'in') {
       u.setScale('x', { min: currentMin + delta, max: currentMax + delta });
