@@ -16,10 +16,6 @@ export class StockDataSharedService {
 
   constructor() {}
 
-  // updateHoveredData(data: any[], stockPercentage: number[]): void {
-  //   this.hoveredDataSubject.next(data);
-  //   this.hoveredDataPercentage.next(stockPercentage);
-  // }
   updateData(data: any): void {
     this.hoveredDataSubject.next(data);
   }

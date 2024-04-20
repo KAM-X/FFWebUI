@@ -124,10 +124,6 @@ export class StockGraphComponent {
     if (this.uPlotInstance) {
       this.uPlotInstance.setData(this.data);
       this.sharedService.updateData(this.data);
-
-      // update data observable
-      // console.log('update - > on uPlotInstance');
-      // this.logDataAtCursor(this.uPlotInstance, null);
     }
   }
 
