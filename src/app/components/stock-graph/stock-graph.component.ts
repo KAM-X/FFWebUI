@@ -133,8 +133,8 @@ export class StockGraphComponent {
       ...this.getSize(),
       scales: {
         x: {
-          auto: true,
           time: true,
+          range: (u, newMin, newMax) => this.adjustedRange(u, newMin, newMax),
         },
         y: {
           auto: true,
@@ -181,9 +181,20 @@ export class StockGraphComponent {
     }
     this.sharedService.updateHoveredData(idx);
   }
+
+  adjustedRange(u: uPlot, newMin: number, newMax: number): [number, number] {
+    let curMin = u.scales['x'].min ?? 0;
+    let curMax = u.scales['x'].max ?? 0;
+
+    if (newMax - newMin < 70) {
+      return [curMin, curMax];
+    } else {
+      return [newMin, newMax];
+    }
+  }
+
   handleZoom(uPlotInstance: uPlot, scaleKey: string): void {
     if (scaleKey === 'x') {
-      // This will get the current min and max of the x-axis
       let min = uPlotInstance.scales['x'].min;
       let max = uPlotInstance.scales['x'].max;
 
