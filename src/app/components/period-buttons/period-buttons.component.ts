@@ -9,7 +9,7 @@ export interface PeriodChangeEvent {
   selector: 'app-period-buttons',
   templateUrl: './period-buttons.component.html',
   styleUrls: ['./period-buttons.component.css'],
-  standalone: true
+  standalone: true,
 })
 export class PeriodButtonsComponent {
   @Output() periodChange = new EventEmitter<PeriodChangeEvent>();
@@ -20,6 +20,9 @@ export class PeriodButtonsComponent {
 
     let startDatetime = new Date();
     let endDatetime = new Date();
+
+    endDatetime.setHours(23, 59, 59, 999);
+    startDatetime = new Date(endDatetime.getTime());
 
     switch (period) {
       case '1D':
@@ -45,9 +48,9 @@ export class PeriodButtonsComponent {
         break;
     }
 
-    this.periodChange.emit({ 
-      startDatetime: new Date(startDatetime.getTime()), 
-      endDatetime: new Date(endDatetime.getTime()) 
-  });
+    this.periodChange.emit({
+      startDatetime: new Date(startDatetime.getTime()),
+      endDatetime: new Date(endDatetime.getTime()),
+    });
   }
 }
