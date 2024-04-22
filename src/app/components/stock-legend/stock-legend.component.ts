@@ -66,9 +66,7 @@ export class StockLegendComponent implements OnInit {
     const stockPercentage =
       ((hoveredData[id]! - stock1Base!) / stock1Base!) * 100;
     if (hoveredData[id] != null || hoveredData[id] != undefined) {
-      return `${hoveredData[id]!.toFixed(2)}$ (${stockPercentage.toFixed(
-        2
-      )}%) Past day`;
+      return `${hoveredData[id]!.toFixed(2)}$ (${stockPercentage.toFixed(2)}%)`;
     }
     return 'N/A';
   }
