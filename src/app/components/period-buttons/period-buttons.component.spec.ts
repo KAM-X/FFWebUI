@@ -7,7 +7,7 @@ describe('PeriodButtonsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PeriodButtonsComponent]
+      imports: [PeriodButtonsComponent],
     }).compileComponents();
   });
 
@@ -27,18 +27,21 @@ describe('PeriodButtonsComponent', () => {
 
   const periods = ['1D', '7D', '1M', '6M', 'YTD', '1Y', '5Y'];
 
-  periods.forEach(period => {
+  periods.forEach((period) => {
     it(`should emit correct start and end dates when the ${period} button is clicked`, () => {
       spyOn(component.periodChange, 'emit');
       const now = new Date();
       jasmine.clock().install();
       jasmine.clock().mockDate(now);
-  
+
       component.onPeriodSelect(period);
-      
+
       let expectedStartDatetime = new Date();
       let expectedEndDatetime = new Date();
-      
+
+      expectedEndDatetime.setHours(23, 59, 59, 999);
+      expectedStartDatetime = new Date(expectedEndDatetime.getTime());
+
       switch (period) {
         case '1D':
           expectedStartDatetime.setDate(now.getDate() - 1);
@@ -62,12 +65,12 @@ describe('PeriodButtonsComponent', () => {
           expectedStartDatetime.setFullYear(now.getFullYear() - 5);
           break;
       }
-      
+
       expect(component.periodChange.emit).toHaveBeenCalledWith({
         startDatetime: new Date(expectedStartDatetime.getTime()),
-        endDatetime: new Date(expectedEndDatetime.getTime())
+        endDatetime: new Date(expectedEndDatetime.getTime()),
       });
-      
+
       jasmine.clock().uninstall();
     });
   });
